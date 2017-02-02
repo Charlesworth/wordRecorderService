@@ -24,7 +24,9 @@ func (lc *letterCounter) AddWord(word string) {
 	lc.lock.Lock()
 	defer lc.lock.Unlock()
 	for _, r := range word {
-		lc.letterMap[r]++
+		if isLowerCaseLetter(r) {
+			lc.letterMap[r]++
+		}
 	}
 	// invalidate the mostFrequentCache
 	lc.mostFrequentCache = nil
@@ -87,3 +89,7 @@ type byCount []letterCount
 func (a byCount) Len() int           { return len(a) }
 func (a byCount) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byCount) Less(i, j int) bool { return a[i].count < a[j].count }
+
+func isLowerCaseLetter(r rune) bool {
+	return (97 <= int(r)) && (int(r) < 122)
+}
