@@ -19,11 +19,11 @@ func init() {
 
 func checkFlags() error {
 	if (*inputPort < 1024) || (*statsPort < 1024) {
-		return errors.New("Cannot use port numbers < 1024")
+		return errors.New("Error: Cannot use port numbers < 1024")
 	}
 
 	if *inputPort == *statsPort {
-		return errors.New("Input port and Stats port cannot use the same port number")
+		return errors.New("Error: Input port and Stats port cannot use the same port number")
 	}
 
 	return nil
