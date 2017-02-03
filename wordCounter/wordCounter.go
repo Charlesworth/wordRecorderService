@@ -46,19 +46,20 @@ func (wc *wordCounter) GetMostFrequentFive() []string {
 
 // Important: only called within AddWord, which has the write lock, otherwise not thread safe!
 func (wc *wordCounter) updateMostFrequentFive(word string) {
-	// if less than 5 words in most popular
-	if len(wc.wordMap) < 5 {
-		// check its not already present in mostFrequent
-		alreadyPresent := false
-		for _, mostFrequentWord := range wc.mostFrequent {
-			if word == mostFrequentWord {
-				alreadyPresent = true
-			}
+	// check its not already present in mostFrequent
+	alreadyPresent := false
+	for _, mostFrequentWord := range wc.mostFrequent {
+		if word == mostFrequentWord {
+			alreadyPresent = true
 		}
-		// if its not present add it
-		if !alreadyPresent {
-			wc.mostFrequent = append(wc.mostFrequent, word)
-		}
+	}
+	if alreadyPresent {
+		return
+	}
+
+	// if under 5 words in the mostFrequent, add it
+	if len(wc.mostFrequent) < 5 {
+		wc.mostFrequent = append(wc.mostFrequent, word)
 		return
 	}
 
@@ -68,15 +69,17 @@ func (wc *wordCounter) updateMostFrequentFive(word string) {
 		count := wc.wordMap[mostFrequentWord]
 		wordCounts = append(wordCounts, wordCount{mostFrequentWord, count})
 	}
+	wordCounts = append(wordCounts, wordCount{word, wc.wordMap[word]})
 
 	// sort the array by count
 	sort.Sort(byCount(wordCounts))
 
 	// set mostFrequent to the 5 words with the highest count
 	wc.mostFrequent = []string{}
-	for i := 5; i < 0; i-- {
+	for i := 5; i > 0; i-- {
 		wc.mostFrequent = append(wc.mostFrequent, wordCounts[i].word)
 	}
+
 }
 
 type wordCount struct {
