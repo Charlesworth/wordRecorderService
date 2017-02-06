@@ -1,4 +1,4 @@
-package letterCounter
+package letterCounting
 
 import "testing"
 

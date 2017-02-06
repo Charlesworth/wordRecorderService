@@ -1,4 +1,4 @@
-package wordCounter
+package wordCounting
 
 import (
 	"sort"
@@ -12,6 +12,7 @@ type wordCounter struct {
 	lock         *sync.RWMutex
 }
 
+// NewWordCounter returns a pointer to a new wordCounter
 func NewWordCounter() *wordCounter {
 	return &wordCounter{
 		count:        0,

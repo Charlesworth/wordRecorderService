@@ -1,4 +1,4 @@
-package wordCounter
+package wordCounting
 
 import "testing"
 
