@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"wordRecorderService/letterCounting"
 	"wordRecorderService/wordCounting"
 )
@@ -11,13 +12,16 @@ var letterCounter = letterCounting.NewLetterCounter()
 var wordCounter = wordCounting.NewWordCounter()
 
 func main() {
+	log.Println("Word Recorder Service")
 	statsMux := http.NewServeMux()
 	statsMux.HandleFunc("/stats", getStats)
-	go http.ListenAndServe(":8081", statsMux)
-
-	log.Println("server starting")
+	statsPortStr := ":" + strconv.Itoa(*statsPort)
+	log.Println("Stats port", statsPortStr)
+	go http.ListenAndServe(statsPortStr, statsMux)
 
 	inputMux := http.NewServeMux()
-	inputMux.HandleFunc("/put", putSentence)
-	log.Fatalln(http.ListenAndServe(":8080", inputMux))
+	inputMux.HandleFunc("/", putSentence)
+	inputPortStr := ":" + strconv.Itoa(*inputPort)
+	log.Println("Input port", inputPortStr)
+	log.Fatalln(http.ListenAndServe(inputPortStr, inputMux))
 }

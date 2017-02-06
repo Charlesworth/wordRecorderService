@@ -67,6 +67,18 @@ func TestPutSentence(t *testing.T) {
 	if resp.StatusCode != 202 {
 		t.Error("Error: HTTP status code was not 202:", resp.StatusCode)
 	}
+
+	t.Log("Test: anything but a Put should return 405")
+	req, _ = http.NewRequest("POST", testServer.URL, nil)
+	resp, err = client.Do(req)
+	if err != nil {
+		t.Error("Test Setup Failure: unable to make request to the test server:", err)
+	}
+
+	if resp.StatusCode != 405 {
+		t.Error("Error: incorrect stats request method should return 405, returned", resp.StatusCode)
+	}
+
 	testServer.Close()
 }
 
@@ -106,6 +118,18 @@ func TestGetStats(t *testing.T) {
 	}
 
 	resp.Body.Close()
+
+	t.Log("Test: anything but a Get should return 405")
+	req, _ = http.NewRequest("POST", testServer.URL, nil)
+	resp, err = client.Do(req)
+	if err != nil {
+		t.Error("Test Setup Failure: unable to make request to the test server:", err)
+	}
+
+	if resp.StatusCode != 405 {
+		t.Error("Error: incorrect stats request method should return 405, returned", resp.StatusCode)
+	}
+
 	testServer.Close()
 }
 

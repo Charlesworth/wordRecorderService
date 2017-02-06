@@ -5,29 +5,26 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
-
-var logger *log.Logger
-
-func init() {
-	logger = log.New(os.Stdout, "", 0)
-}
 
 func putSentence(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
-	logger.Println(r.RemoteAddr, "Put Request")
+	if r.Method != "PUT" {
+		w.WriteHeader(405)
+		return
+	}
+	log.Println(r.RemoteAddr, "Put Request")
 
 	if err != nil {
 		w.WriteHeader(500)
-		logger.Println(r.RemoteAddr, "Put Request Error 500:", err)
+		log.Println(r.RemoteAddr, "Put Request Error 500:", err)
 		return
 	}
 
 	if len(body) == 0 {
 		w.WriteHeader(400)
-		logger.Println(r.RemoteAddr, "Put Request Error 400: no request body supplied")
+		log.Println(r.RemoteAddr, "Put Request Error 400: no request body supplied")
 		return
 	}
 
@@ -42,13 +39,17 @@ func putSentence(w http.ResponseWriter, r *http.Request) {
 }
 
 type Stats struct {
-	Count         int
-	Top_5_words   []string
-	Top_5_letters []string
+	Count         int      `json:"count"`
+	Top_5_words   []string `json:"top_5_words"`
+	Top_5_letters []string `json:"top_5_letters"`
 }
 
 func getStats(w http.ResponseWriter, r *http.Request) {
-	logger.Println(r.RemoteAddr, "Get /stats Request")
+	if r.Method != "GET" {
+		w.WriteHeader(405)
+		return
+	}
+	log.Println(r.RemoteAddr, "Get /stats Request")
 
 	count := wordCounter.GetCount()
 	topWords := wordCounter.GetMostFrequentFive()
@@ -63,11 +64,11 @@ func getStats(w http.ResponseWriter, r *http.Request) {
 	jsonStats, err := json.Marshal(stats)
 	if err != nil {
 		w.WriteHeader(500)
-		logger.Println(r.RemoteAddr, "Put Request Error 500: unable to marshal stats to JSON")
+		log.Println(r.RemoteAddr, "Put Request Error 500: unable to marshal stats to JSON")
 		return
 	}
 
-	w.Write(jsonStats)
 	w.WriteHeader(200)
+	w.Write(jsonStats)
 	return
 }
