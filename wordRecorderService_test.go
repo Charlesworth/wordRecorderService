@@ -51,6 +51,18 @@ var behavioralAPITests = []behavioralAPITableTest{
 			Top_5_letters: []string{"a", "b"},
 		},
 	},
+	behavioralAPITableTest{
+		testDescription: "putting multiple sentences should return correct stats",
+		putSentences: []string{
+			"aa",
+			"bb",
+		},
+		expectedStats: Stats{
+			Count:         2,
+			Top_5_words:   []string{"aa", "bb"},
+			Top_5_letters: []string{"a", "b"},
+		},
+	},
 }
 
 // Behavioral tests for the http API
@@ -93,20 +105,19 @@ TestLoop:
 
 		var wordStats Stats
 		bodyByte, _ := ioutil.ReadAll(resp.Body)
-		t.Log(string(bodyByte))
 		err = json.Unmarshal(bodyByte, &wordStats)
 		if err != nil {
 			t.Error("Test Setup Failure: unable to unmarshal GET /stats body")
 		}
 
 		if !sliceEqual(test.expectedStats.Top_5_letters, wordStats.Top_5_letters) {
-			t.Error("top 5 letters !=")
+			t.Error("Error: stats Top_5_letters [", wordStats.Top_5_letters, "] is not equal to expected output [", test.expectedStats.Top_5_letters, "]")
 		}
 		if !sliceEqual(test.expectedStats.Top_5_words, wordStats.Top_5_words) {
-			t.Error("top 5 words !=")
+			t.Error("Error: stats Top_5_words [", wordStats.Top_5_words, "] is not equal to expected output [", test.expectedStats.Top_5_words, "]")
 		}
 		if test.expectedStats.Count != wordStats.Count {
-			t.Error("count !=")
+			t.Error("Error: stats count [", wordStats.Count, "] is not equal to expected output [", test.expectedStats.Count, "]")
 		}
 	}
 }
@@ -118,13 +129,13 @@ func sliceEqual(a, b []string) bool {
 	}
 
 	for _, i := range a {
-		test := false
+		contains := false
 		for _, j := range b {
 			if i == j {
-				test = true
+				contains = true
 			}
 		}
-		if !test {
+		if !contains {
 			return false
 		}
 	}
