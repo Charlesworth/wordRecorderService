@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"wordRecorderService/letterCounting"
-	"wordRecorderService/wordCounting"
+
+	"github.com/charlesworth/wordRecorderService/letterCounting"
+	"github.com/charlesworth/wordRecorderService/wordCounting"
 )
 
 type behavioralAPITableTest struct {

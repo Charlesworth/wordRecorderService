@@ -4,8 +4,9 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"wordRecorderService/letterCounting"
-	"wordRecorderService/wordCounting"
+
+	"github.com/charlesworth/wordRecorderService/letterCounting"
+	"github.com/charlesworth/wordRecorderService/wordCounting"
 )
 
 var letterCounter = letterCounting.NewLetterCounter()
